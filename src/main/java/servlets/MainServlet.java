@@ -1,5 +1,6 @@
 package servlets;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import javaBeans.GestorPreguntas;
+import javaBeans.GestorPreguntasJavascript;
 import javaBeans.PreguntaTest;
 
 /**
@@ -44,21 +45,47 @@ public class MainServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		System.out.println("Estamos en el servlet POST");
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		// Crear una instancia de GestorPreguntas
-        GestorPreguntas gestor = new GestorPreguntas();
+		
+		BufferedReader miDato = request.getReader();
+		String miDatoFinal = miDato.readLine();
+		System.out.println(miDatoFinal);
+		
+		if (miDatoFinal.equals("js")) {
+		    try {
+		        GestorPreguntasJavascript gestor = new GestorPreguntasJavascript();
+		        List<PreguntaTest> preguntas = gestor.getPreguntas();
+		        Gson gson = new Gson();
+		        String json = gson.toJson(preguntas);
+		        
+		        System.out.println("Esto es lo que se envia " + json); // Considera usar un framework de logging.
+		        response.setContentType("application/json");
+		        response.setCharacterEncoding("UTF-8");
+		        response.getWriter().write(json);
+		    } catch (IOException e) {
+		        e.printStackTrace();
+		        // Considera manejar adecuadamente la excepción, por ejemplo, enviando un código de estado HTTP de error.
+		    }
+		}
 
-        // Obtener la lista de preguntas
-        List<PreguntaTest> preguntas = gestor.getPreguntas();
-
-        // Convertir las preguntas a formato JSON
-        Gson gson = new Gson();
-        String json = gson.toJson(preguntas);
-
-        // Preparar la respuesta para enviar el JSON
-        System.out.println(json);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(json);
+		
+		// Crear una instancia de GestorPreguntasJavascript
+//		GestorPreguntasJavascript gestor = new GestorPreguntasJavascript();
+//
+//        // Obtener la lista de preguntas
+//        List<PreguntaTest> preguntas = gestor.getPreguntas();
+//
+//        // Convertir las preguntas a formato JSON
+//        Gson gson = new Gson();
+//        String json = gson.toJson(preguntas);
+//
+//        // Preparar la respuesta para enviar el JSON
+//        System.out.println(json);
+//        response.setContentType("application/json");
+//        response.setCharacterEncoding("UTF-8");
+//        response.getWriter().write(json);
+		
+		
+		
 	}
 
 }
